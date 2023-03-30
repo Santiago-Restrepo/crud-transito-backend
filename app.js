@@ -6,6 +6,7 @@ const pkg = require('./package.json');
 config();
 var bodyParser = require('body-parser')
 //Routes
+const propietarioRoutes = require('./routes/propietario.routes')
 
 const { logErrors, boomErrorHandler, errorHandler } = require('./middlewares/error.handler');
 // const authRoutes = require('./routes/auth.routes')
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
         version: pkg.version
     }); 
 });
+app.use("/api/propietario", propietarioRoutes);
 
 //Error middlewares
 app.use(logErrors);
