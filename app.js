@@ -7,6 +7,9 @@ config();
 var bodyParser = require('body-parser')
 //Routes
 const propietarioRoutes = require('./routes/propietario.routes')
+const vehiculoRoutes = require('./routes/vehiculo.routes')
+const matriculaRoutes = require('./routes/matricula.routes')
+const infraccionRoutes = require('./routes/infraccion.routes')
 
 const { logErrors, boomErrorHandler, errorHandler } = require('./middlewares/error.handler');
 // const authRoutes = require('./routes/auth.routes')
@@ -35,6 +38,9 @@ app.get("/", (req, res) => {
     }); 
 });
 app.use("/api/propietario", propietarioRoutes);
+app.use("/api/vehiculo", vehiculoRoutes);
+app.use("/api/matricula", matriculaRoutes);
+app.use("/api/infraccion", infraccionRoutes);
 
 //Error middlewares
 app.use(logErrors);

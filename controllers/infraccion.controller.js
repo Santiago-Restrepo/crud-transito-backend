@@ -1,13 +1,13 @@
 const boom = require('@hapi/boom');
 const client = require("../clients/postgres");
-class PropietarioController {
+class InfraccionController {
     constructor() {
         this.client = client;
     }
 
     async getAll(){
         try {
-            const query = "SELECT * FROM Propietario";
+            const query = "SELECT * FROM propietario";
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
@@ -77,4 +77,4 @@ class PropietarioController {
     }
 }
 
-module.exports = new PropietarioController();
+module.exports = new InfraccionController();

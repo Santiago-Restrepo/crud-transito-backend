@@ -1,13 +1,13 @@
 const boom = require('@hapi/boom');
 const client = require("../clients/postgres");
-class PropietarioController {
+class MatriculaController {
     constructor() {
         this.client = client;
     }
 
     async getAll(){
         try {
-            const query = "SELECT * FROM Propietario";
+            const query = "SELECT * FROM Matricula";
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
@@ -17,9 +17,9 @@ class PropietarioController {
 
     async getOne(id){
         try {
-            const query = "SELECT * FROM propietario WHERE id = $1";
+            const query = "SELECT * FROM Matricula WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rows.length === 0) throw boom.notFound("Propietario no encontrado");
+            if(res.rows.length === 0) throw boom.notFound("Matricula no encontrada");
             return res.rows[0];
         } catch (error) {
             throw boom.boomify(error);
@@ -29,16 +29,22 @@ class PropietarioController {
     async create(data){
         try {
             const {
-                nombre,
-                direccion,
-                tipo,
+                placa,
+                marca,
+                fecha_matricula,
+                propietario_id,
             } = data;
-            if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
-            const query = "INSERT INTO Propietario (nombre, direccion, tipo) VALUES ($1, $2, $3) RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo.toLowerCase()]);
+            if(!placa || !marca || !propietario_id || !fecha_matricula) throw boom.badRequest("Faltan datos");
+            const query = "INSERT INTO Matricula (placa, marca, fecha_matricula, propietario_id) VALUES ($1, $2, $3, $4) RETURNING *";
+            const res = await this.client.query(query, [placa, marca, fecha_matricula, propietario_id]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -77,4 +83,4 @@ class PropietarioController {
     }
 }
 
-module.exports = new PropietarioController();
+module.exports = new MatriculaController();
