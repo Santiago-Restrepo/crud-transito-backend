@@ -7,7 +7,7 @@ class VehiculoController {
 
     async getAll(){
         try {
-            const query = "SELECT * FROM propietario";
+            const query = "SELECT * FROM Vehiculo";
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
@@ -17,9 +17,9 @@ class VehiculoController {
 
     async getOne(id){
         try {
-            const query = "SELECT * FROM propietario WHERE id = $1";
+            const query = "SELECT * FROM Vehiculo WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rows.length === 0) throw boom.notFound("Propietario no encontrado");
+            if(res.rows.length === 0) throw boom.notFound("Vehículo no encontrado");
             return res.rows[0];
         } catch (error) {
             throw boom.boomify(error);
@@ -29,13 +29,12 @@ class VehiculoController {
     async create(data){
         try {
             const {
-                nombre,
-                direccion,
                 tipo,
+                matricula_id
             } = data;
-            if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
-            const query = "INSERT INTO Propietario (nombre, direccion, tipo) VALUES ($1, $2, $3) RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo.toLowerCase()]);
+            if(["automovil", "moto", "carro pesado"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de vehículo no valido");
+            const query = "INSERT INTO Vehiculo (tipo, matricula_id) VALUES ($1, $2) RETURNING *";
+            const res = await this.client.query(query, [tipo.toLowerCase(), matricula_id]);
             return res.rows[0];
         } catch (error) {
             throw boom.boomify(error);
@@ -45,20 +44,19 @@ class VehiculoController {
     async update(id, data){
         try {
             let {
-                nombre,
-                direccion,
                 tipo,
+                matricula_id
             } = data;
             if(tipo){
-                if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
+                if(["automovil", "moto", "carro pesado"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de vehículo no valido");
             }
-            const propietario = await this.getOne(id);
-            nombre = nombre || propietario.nombre;
-            direccion = direccion || propietario.direccion;
-            tipo = tipo || propietario.tipo;
+            const vehiculo = await this.getOne(id);
+            
+            tipo = tipo || vehiculo.tipo;
+            matricula_id = matricula_id || vehiculo.matricula_id;
 
-            const query = "UPDATE Propietario SET nombre = $1, direccion = $2, tipo = $3 WHERE id = $4 RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo?.toLowerCase(), id]);
+            const query = "UPDATE Vehiculo SET tipo = $1, matricula_id = $2 WHERE id = $3 RETURNING *";
+            const res = await this.client.query(query, [tipo.toLowerCase(), matricula_id, id]);
             return res.rows[0];
         } catch (error) {
             throw boom.boomify(error);
@@ -67,10 +65,10 @@ class VehiculoController {
 
     async delete(id){
         try {
-            const query = "DELETE FROM Propietario WHERE id = $1";
+            const query = "DELETE FROM Vehiculo WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rowCount === 0) throw boom.notFound("Propietario no encontrado");
-            return {message: "Propietario eliminado"};
+            if(res.rowCount === 0) throw boom.notFound("Vehículo no encontrado");
+            return {message: "Vehículo eliminado"};
         } catch (error) {
             throw boom.boomify(error);
         }

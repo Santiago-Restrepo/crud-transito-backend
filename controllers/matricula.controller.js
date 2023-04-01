@@ -51,20 +51,20 @@ class MatriculaController {
     async update(id, data){
         try {
             let {
-                nombre,
-                direccion,
-                tipo,
+                placa,
+                marca,
+                fecha_matricula,
+                propietario_id,
             } = data;
-            if(tipo){
-                if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
-            }
-            const propietario = await this.getOne(id);
-            nombre = nombre || propietario.nombre;
-            direccion = direccion || propietario.direccion;
-            tipo = tipo || propietario.tipo;
+            const matricula = await this.getOne(id);
+            
+            placa = placa || matricula.placa;
+            marca = marca || matricula.marca;
+            fecha_matricula = fecha_matricula || matricula.fecha_matricula;
+            propietario_id = propietario_id || matricula.propietario_id;
 
-            const query = "UPDATE Propietario SET nombre = $1, direccion = $2, tipo = $3 WHERE id = $4 RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo?.toLowerCase(), id]);
+            const query = "UPDATE Matricula SET placa = $1, marca = $2, fecha_matricula = $3, propietario_id = $4 WHERE id = $5 RETURNING *";
+            const res = await this.client.query(query, [placa, marca, fecha_matricula, propietario_id, id]);
             return res.rows[0];
         } catch (error) {
             throw boom.boomify(error);
@@ -73,10 +73,10 @@ class MatriculaController {
 
     async delete(id){
         try {
-            const query = "DELETE FROM Propietario WHERE id = $1";
+            const query = "DELETE FROM Matricula WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rowCount === 0) throw boom.notFound("Propietario no encontrado");
-            return {message: "Propietario eliminado"};
+            if(res.rowCount === 0) throw boom.notFound("Matricula no encontrada");
+            return {message: "Matricula eliminada"};
         } catch (error) {
             throw boom.boomify(error);
         }
