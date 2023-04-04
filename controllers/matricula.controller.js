@@ -11,7 +11,12 @@ class MatriculaController {
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -22,7 +27,12 @@ class MatriculaController {
             if(res.rows.length === 0) throw boom.notFound("Matricula no encontrada");
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -67,7 +77,12 @@ class MatriculaController {
             const res = await this.client.query(query, [placa, marca, fecha_matricula, propietario_id, id]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -78,7 +93,12 @@ class MatriculaController {
             if(res.rowCount === 0) throw boom.notFound("Matricula no encontrada");
             return {message: "Matricula eliminada"};
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 }

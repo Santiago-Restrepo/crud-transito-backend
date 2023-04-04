@@ -7,61 +7,87 @@ class InfraccionController {
 
     async getAll(){
         try {
-            const query = "SELECT * FROM propietario";
+            const query = "SELECT * FROM Infraccion";
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
     async getOne(id){
         try {
-            const query = "SELECT * FROM propietario WHERE id = $1";
+            const query = "SELECT * FROM Infraccion WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rows.length === 0) throw boom.notFound("Propietario no encontrado");
+            if(res.rows.length === 0) throw boom.notFound("Infraccion no encontrada");
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
     async create(data){
         try {
             const {
-                nombre,
-                direccion,
-                tipo,
+                fecha_infraccion,
+                accionada_por,
+                descripcion,
+                valor,
+                vehiculo_id
             } = data;
-            if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
-            const query = "INSERT INTO Propietario (nombre, direccion, tipo) VALUES ($1, $2, $3) RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo.toLowerCase()]);
+            if(!accionada_por) throw boom.badRequest("Tipo de infracción no valida");
+            if(["agente de tránsito", "cámara de detecciones"].indexOf(accionada_por.toLowerCase()) === -1) throw boom.badRequest("Tipo de infracción no valida");
+            const query = "INSERT INTO Infraccion (fecha_infraccion, accionada_por, descripcion, valor, vehiculo_id) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+            const res = await this.client.query(query, [fecha_infraccion, accionada_por, descripcion, valor, vehiculo_id]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
     async update(id, data){
         try {
             let {
-                nombre,
-                direccion,
-                tipo,
+                fecha_infraccion,
+                accionada_por,
+                descripcion,
+                valor,
+                vehiculo_id
             } = data;
-            if(tipo){
-                if(["persona", "empresa"].indexOf(tipo.toLowerCase()) === -1) throw boom.badRequest("Tipo de propietario no valido");
-            }
-            const propietario = await this.getOne(id);
-            nombre = nombre || propietario.nombre;
-            direccion = direccion || propietario.direccion;
-            tipo = tipo || propietario.tipo;
+            
+            if(accionada_por && ["agente de tránsito", "cámara de detecciones"].indexOf(accionada_por.toLowerCase()) === -1) throw boom.badRequest("Tipo de infracción no valida");
+            const infraccion = await this.getOne(id);
+            fecha_infraccion = fecha_infraccion || infraccion.fecha_infraccion;
+            accionada_por = accionada_por || infraccion.accionada_por;
+            descripcion = descripcion || infraccion.descripcion;
+            valor = valor || infraccion.valor;
+            vehiculo_id = vehiculo_id || infraccion.vehiculo_id;
 
-            const query = "UPDATE Propietario SET nombre = $1, direccion = $2, tipo = $3 WHERE id = $4 RETURNING *";
-            const res = await this.client.query(query, [nombre, direccion, tipo?.toLowerCase(), id]);
+            const query = "UPDATE Infraccion SET fecha_infraccion = $1, accionada_por = $2, descripcion = $3, valor = $4, vehiculo_id = $5 WHERE id = $6 RETURNING *";
+            const res = await this.client.query(query, [fecha_infraccion, accionada_por, descripcion, valor, vehiculo_id, id]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -72,7 +98,12 @@ class InfraccionController {
             if(res.rowCount === 0) throw boom.notFound("Propietario no encontrado");
             return {message: "Propietario eliminado"};
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 }

@@ -11,7 +11,12 @@ class PropietarioController {
             const res = await this.client.query(query);
             return res.rows;
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -22,7 +27,12 @@ class PropietarioController {
             if(res.rows.length === 0) throw boom.notFound("Propietario no encontrado");
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -38,7 +48,12 @@ class PropietarioController {
             const res = await this.client.query(query, [nombre, direccion, tipo.toLowerCase()]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -61,7 +76,12 @@ class PropietarioController {
             const res = await this.client.query(query, [nombre, direccion, tipo?.toLowerCase(), id]);
             return res.rows[0];
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 
@@ -72,7 +92,12 @@ class PropietarioController {
             if(res.rowCount === 0) throw boom.notFound("Propietario no encontrado");
             return {message: "Propietario eliminado"};
         } catch (error) {
-            throw boom.boomify(error);
+            const message = error.message;
+            if(message){
+                throw boom.badRequest(message);
+            }else{
+                throw boom.boomify(error);
+            }
         }
     }
 }
