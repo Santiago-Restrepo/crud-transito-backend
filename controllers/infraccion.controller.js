@@ -93,10 +93,10 @@ class InfraccionController {
 
     async delete(id){
         try {
-            const query = "DELETE FROM Propietario WHERE id = $1";
+            const query = "DELETE FROM Infraccion WHERE id = $1";
             const res = await this.client.query(query, [id]);
-            if(res.rowCount === 0) throw boom.notFound("Propietario no encontrado");
-            return {message: "Propietario eliminado"};
+            if(res.rowCount === 0) throw boom.notFound("Infraccion no encontrado");
+            return {message: "Infraccion eliminada"};
         } catch (error) {
             const message = error.message;
             if(message){
